@@ -1,7 +1,8 @@
-import type { ICellItem } from "../types/types";
+import type { ICellItem, IShipItem } from "../types/types";
 
 export interface ICellStoreState {
    cells: ICellItem[][],
-   damageShip: (id: string) => void;
+   ships: IShipItem[],
+   damageCell: (cellId: string) => void;
    toggleSelectCell: (id: string) => void;
 }
