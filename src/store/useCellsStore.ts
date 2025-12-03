@@ -25,6 +25,40 @@ export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
 
       if (!areCellsEmpty) return state;
 
+      const seenCells = new Set();
+      let nothingNearby: boolean = true;
+
+      for (const cellId of cellIds) {
+         const rowIndex = Math.floor(+cellId / 10);
+         const colIndex = +cellId % 10;
+
+         for (let i=-1; i<2; i++) {
+            for (let j=-1; j<2; j++) {
+               const currRow = rowIndex+i;
+               const currCol = colIndex+j;
+
+               if (currRow < 0 || currRow > 9 || currCol < 0 || currCol > 9) {
+                  continue;
+               }
+
+               const currCellId = `${currRow}${currCol}`;
+
+               if (!seenCells.has(currCellId)) {
+                  seenCells.add(currCellId);
+
+                  if (state.cells[currRow][currCol].hasShip && !cellIds.includes(currCellId)) {
+                     nothingNearby = false;
+                     break;
+                  }
+               }
+            }
+            if (!nothingNearby) break;
+         }
+         if (!nothingNearby) break;
+      }
+
+      if (!nothingNearby) return state;
+
       let shipToPlace: IShipItem | null = null;
 
       const updatedShips = state.ships.map((ship) => {
