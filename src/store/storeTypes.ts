@@ -4,6 +4,7 @@ export interface ICellStoreState {
    gameStatus: GameStatus;
    cells: ICellItem[][],
    ships: IShipItem[],
+   placeShip: (cellIds: string[]) => void;
    damageCell: (cellId: string) => void;
    toggleSelectCell: (id: string) => void;
 }
