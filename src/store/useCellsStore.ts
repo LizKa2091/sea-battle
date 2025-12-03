@@ -5,6 +5,7 @@ import { initShips } from "../utils/initShips";
 import type { ICellStoreState } from "./storeTypes";
 
 export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
+   gameStatus: 'placement',
    cells: initField(),
    ships: initShips(),
    damageCell: (cellId: string) => set((state) => ({
@@ -22,7 +23,7 @@ export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
       cells: state.cells.map((row) => 
          row.map((cell) => cell.id === id ?
             { ...cell, isSelected: !cell.isSelected } : 
-            { ...cell, isSelected: false }
+            { ...cell, isSelected: state.gameStatus === 'in progress' ? false : cell.isSelected } // TODO: set false for isSelected if prev cell wasn't nearby
          ))
    }))
 }), 

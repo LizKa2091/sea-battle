@@ -1,6 +1,7 @@
-import type { ICellItem, IShipItem } from "../types/types";
+import type { GameStatus, ICellItem, IShipItem } from "../types/types";
 
 export interface ICellStoreState {
+   gameStatus: GameStatus;
    cells: ICellItem[][],
    ships: IShipItem[],
    damageCell: (cellId: string) => void;
