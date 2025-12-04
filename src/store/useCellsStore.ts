@@ -98,13 +98,97 @@ export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
          { ...ship, state: 'damaged' } : ship
       )
    })),
-   toggleSelectCell: (id: string) => set((state) => ({
-      cells: state.cells.map((row) => 
-         row.map((cell) => cell.id === id ?
-            { ...cell, isSelected: !cell.isSelected } : 
-            { ...cell, isSelected: state.gameStatus === 'in progress' ? false : cell.isSelected } // TODO: set false for isSelected if prev cell wasn't nearby
-         ))
-   }))
+   toggleSelectCell: (id: string) => set((state) => {
+      const currSelectedCells: string[] = [];
+
+      state.cells.forEach((row) => {
+         row.forEach((cell) => {
+            if (cell.isSelected) currSelectedCells.push(cell.id);
+         })
+      })
+
+      if (currSelectedCells.includes(id)) {
+         return { cells: state.cells.map((row) => 
+            row.map((cell) => cell.id === id ?
+               { ...cell, isSelected: true } : cell
+            )
+         )}
+      }
+
+      if (!currSelectedCells.length) {
+         return { 
+            cells: state.cells.map((row => 
+               row.map((cell) => cell.id === id ? { ...cell, isSelected: true } : cell)
+            ))
+         }
+      }
+
+      if (currSelectedCells.length === 1) {
+         const firstCell = currSelectedCells[0];
+         const firstRow = Math.floor(+firstCell / 10);
+         const firstCol = +firstCell % 10;
+
+         const newRow = Math.floor(+id / 10);
+         const newCol = +id % 10;
+
+         const isClose = 
+            (firstRow === newRow && Math.abs(firstCol - newCol) === 1) ||
+            (firstCol === newCol && Math.abs(firstRow - newRow) === 1);
+
+         return {
+            cells: state.cells.map((row) =>
+               row.map((cell) =>
+                  cell.id === id ?
+                     { ...cell, isSelected: isClose } :
+                        (isClose ? cell : { ...cell, isSelected: false })
+               )
+            )
+         }
+      }
+
+      const rows = currSelectedCells.map((cell) => Math.floor(+cell / 10));
+      const cols = currSelectedCells.map((cell) => +cell % 10);
+
+      const allSameRow = rows.every((row) => row === rows[0]);
+      const allSameCol = cols.every((col) => col === cols[0]);
+
+      const newRow = Math.floor(+id / 10);
+      const newCol = +id % 10;
+
+      let isNearby = false;
+
+      if (allSameRow) {
+         const minCol = Math.min(...cols);
+         const maxCol = Math.max(...cols);
+
+         isNearby = newRow === rows[0] && (newCol === minCol - 1 || newCol === maxCol + 1);
+      }
+      else if (allSameCol) {
+         const minRow = Math.min(...rows);
+         const maxRow = Math.max(...rows);
+         
+         isNearby = newCol === cols[0] && (newRow === minRow - 1 || newRow === maxRow + 1);
+      }
+
+      if (!isNearby) {
+         return {
+            cells: state.cells.map((row) =>
+               row.map((cell) =>
+                  cell.id === id ?
+                     { ...cell, isSelected: true } : { ...cell, isSelected: false }
+               )
+            )
+         }
+      }
+
+      return {
+         cells: state.cells.map((row) => 
+            row.map((cell) =>
+               cell.id === id ? { ...cell, isSelected: true } : cell
+            )
+         )
+      }
+   })
 }), 
    { name: 'cells-storage' }
 ))
