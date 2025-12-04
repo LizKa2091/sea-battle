@@ -14,6 +14,8 @@ export interface IShipItem {
    takenCellIds: string[];
 }
 
+export type GameStatus = 'start' | 'placement' | 'in progress' | 'triumph' | 'defeat';
+
 export type FieldCells = ICellItem[][];
 
 export type ShipType = 'single' | 'duo' | 'trio' | 'quadro'; 

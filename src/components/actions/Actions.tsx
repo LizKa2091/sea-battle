@@ -1,21 +1,24 @@
 import { type FC } from 'react'
 import ActionButton from '../action-button/ActionButton';
 import { useCellsStore } from '../../store/useCellsStore';
+import { useSelectedCells } from '../../hooks/useSelectedCells';
 
 import styles from './Actions.module.scss';
-import { useSelectedCell } from '../../hooks/useSelectedCell';
 
 const Actions: FC = () => {
-   const { damageShip } = useCellsStore();
-   const selectedCell = useSelectedCell();
+   const { damageCell, placeShip } = useCellsStore();
+   const selectedCells = useSelectedCells();
 
-   if (!selectedCell) {
+   if (!selectedCells.length) {
       return null;
    }
 
+   const selectedCellsIds = selectedCells.map((cell) => cell.id);
+
    return (
       <div className={styles.actionsContainer}>
-         <ActionButton text='Атаковать' onClick={() => damageShip(selectedCell.id)} />
+         <ActionButton text='Атаковать' onClick={() => damageCell(selectedCells[0].id)} />
+         <ActionButton text='Разместить корабль' onClick={() => placeShip(selectedCellsIds)} />
       </div>
    )
 }

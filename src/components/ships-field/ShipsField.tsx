@@ -2,20 +2,13 @@ import { type FC } from 'react';
 
 import ShipCell from '../ship-cell/ShipCell';
 import { shipsConfig } from '../../utils/initShips';
-import { useCellsStore } from '../../store/useCellsStore';
+import { useShipsTrack } from '../../hooks/useShipsTrack';
 import type { ShipType } from '../../types/types';
 
 import styles from './ShipsField.module.scss';
 
 const ShipsField: FC = () => {
-   const { ships } = useCellsStore();
-
-   const shipsTrack: Record<ShipType, number> = {
-      single: ships.filter((ship) => ship.type === 'single' && ship.state === 'ready').length,
-      duo: ships.filter((ship) => ship.type === 'duo' && ship.state === 'ready').length,
-      trio: ships.filter((ship) => ship.type === 'trio' && ship.state === 'ready').length,
-      quadro: ships.filter((ship) => ship.type === 'quadro' && ship.state === 'ready').length,
-   }
+   const shipsTrack = useShipsTrack();
 
    return (
       <div className={styles.field}>
