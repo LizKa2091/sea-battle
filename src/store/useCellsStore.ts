@@ -110,7 +110,7 @@ export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
       if (currSelectedCells.includes(id)) {
          return { cells: state.cells.map((row) => 
             row.map((cell) => cell.id === id ?
-               { ...cell, isSelected: true } : cell
+               { ...cell, isSelected: false } : cell
             )
          )}
       }
@@ -122,6 +122,7 @@ export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
             ))
          }
       }
+
 
       if (currSelectedCells.length === 1) {
          const firstCell = currSelectedCells[0];
