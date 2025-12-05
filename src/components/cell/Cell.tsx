@@ -1,6 +1,6 @@
 import { useMemo, type FC } from 'react';
 import clsx from 'clsx';
-import { useCellsStore } from '../../store/useCellsStore';
+import { useGameStore } from '../../store/useGameStore';
 
 import styles from './Cell.module.scss';
 
@@ -9,7 +9,7 @@ interface ICellProps {
 }
 
 const Cell: FC<ICellProps> = ({ id }) => {
-   const { cells, toggleSelectCell } = useCellsStore();
+   const { cells, toggleSelectCell } = useGameStore();
 
    const currCell = useMemo(() => {
       for (const row of cells) {

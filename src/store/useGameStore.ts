@@ -3,10 +3,10 @@ import { persist } from "zustand/middleware";
 import { initField } from "../utils/initField";
 import { initShips } from "../utils/initShips";
 import { shipTypeMap } from "../constants/constants";
-import type { ICellStoreState } from "./storeTypes";
+import type { IGameStoreState } from "./storeTypes";
 import type { IShipItem } from "../types/types";
 
-export const useCellsStore = create<ICellStoreState>()(persist((set) => ({
+export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    gameStatus: 'placement',
    cells: initField(),
    ships: initShips(),
