@@ -7,9 +7,12 @@ import type { IGameStoreState } from "./storeTypes";
 import type { IShipItem } from "../types/types";
 
 export const useGameStore = create<IGameStoreState>()(persist((set) => ({
-   gameStatus: 'placement',
+   gameStatus: 'start',
    cells: initField(),
    ships: initShips(),
+   setPlacementStatus: () => set(() => ({
+      gameStatus: 'placement'
+   })),
    placeShip: (cellIds: string[]) => set((state) => {
       const shipSize = cellIds.length;
       const shipType = shipTypeMap[shipSize];
