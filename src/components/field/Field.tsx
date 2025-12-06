@@ -3,13 +3,16 @@ import { type FC } from 'react'
 import Cell from '../cell/Cell';
 import Actions from '../actions/Actions';
 import ShipsField from '../ships-field/ShipsField';
-import { useGameStore } from '../../store/useGameStore';
+import type { ICellItem, User } from '../../types/types';
 
 import styles from './Field.module.scss';
 
-const Field: FC = () => {
-   const { cells } = useGameStore();
+interface IFieldProps {
+   cells: ICellItem[][];
+   user: User;
+}
 
+const Field: FC<IFieldProps> = ({ cells, user }) => {
    if (!cells.length) {
       return null;
    }
@@ -21,7 +24,7 @@ const Field: FC = () => {
                {cells.map((row, index) => 
                   <div key={index} className={styles.row}>
                      {row.map((cell) => (
-                        <Cell key={cell.id} id={cell.id} />
+                        <Cell key={cell.id} id={cell.id} cellData={cell} />
                      ))}
                   </div>
                )}

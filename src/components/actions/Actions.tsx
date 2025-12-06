@@ -6,8 +6,8 @@ import { useSelectedCells } from '../../hooks/useSelectedCells';
 import styles from './Actions.module.scss';
 
 const Actions: FC = () => {
-   const { damageCell, placeShip } = useGameStore();
-   const selectedCells = useSelectedCells();
+   const { damageCell, placeShip, gameStatus } = useGameStore();
+   const selectedCells = useSelectedCells(gameStatus);
 
    if (!selectedCells.length) {
       return null;

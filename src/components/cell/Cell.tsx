@@ -1,29 +1,19 @@
-import { useMemo, type FC } from 'react';
+import { type FC } from 'react';
 import clsx from 'clsx';
 import { useGameStore } from '../../store/useGameStore';
 
 import styles from './Cell.module.scss';
+import type { ICellItem } from '../../types/types';
 
 interface ICellProps {
+   cellData: ICellItem;
    id: string;
 }
 
-const Cell: FC<ICellProps> = ({ id }) => {
-   const { cells, toggleSelectCell } = useGameStore();
+const Cell: FC<ICellProps> = ({ cellData, id }) => {
+   const { toggleSelectCell } = useGameStore();
 
-   const currCell = useMemo(() => {
-      for (const row of cells) {
-         const currCell = row.find((cell) => cell.id === id);
-
-         if (currCell) return currCell;
-      }
-   }, [cells, id]);
-
-   if (!currCell) {
-      return null;
-   }
-
-   const { hasShip, isDamaged, isSelected } = currCell;
+   const { hasShip, isDamaged, isSelected } = cellData;
 
    return (
       <div 

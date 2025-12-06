@@ -2,8 +2,10 @@ import type { GameStatus, ICellItem, IShipItem } from "../types/types";
 
 export interface IGameStoreState {
    gameStatus: GameStatus;
-   cells: ICellItem[][],
-   ships: IShipItem[],
+   playerCells: ICellItem[][],
+   playerShips: IShipItem[],
+   enemyCells: ICellItem[][],
+   enemyShips: IShipItem[],
    setPlacementStatus: () => void;
    placeShip: (cellIds: string[]) => void;
    damageCell: (cellId: string) => void;
