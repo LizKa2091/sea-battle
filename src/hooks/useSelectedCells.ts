@@ -1,15 +1,24 @@
 import { useGameStore } from "../store/useGameStore"
-import type { ICellItem } from "../types/types";
+import type { GameStatus, ICellItem } from "../types/types";
 
-export const useSelectedCells = (): ICellItem[] => {
-   const { cells } = useGameStore();
+export const useSelectedCells = (gameStatus: GameStatus): ICellItem[] => {
+   const { playerCells, enemyCells } = useGameStore();
    const selectedCells: ICellItem[] = [];
 
-   for (const row of cells) {
-      for (const cell of row) {
-         if (cell.isSelected) selectedCells.push(cell);
+   if (gameStatus === 'placement') {
+      for (const row of playerCells) {
+         for (const cell of row) {
+            if (cell.isSelected) selectedCells.push(cell);
+         }
       }
    }
-
+   else {
+      for (const row of enemyCells) {
+         for (const cell of row) {
+            if (cell.isSelected) selectedCells.push(cell);
+         }
+      }
+   }
+   
    return selectedCells;
 }

@@ -134,7 +134,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    toggleSelectCell: (cellId: string) => set((state) => {
       const { owner } = getCellData(cellId);
 
-      if (owner !== 'enemy') return state;
+      if (owner !== 'enemy' && state.gameStatus === 'in progress') return state;
 
       const currSelectedCells: string[] = [];
 
