@@ -1,4 +1,4 @@
-import type { IShipItem, ShipType } from "../types/types"
+import type { IShipItem, ShipType, User } from "../types/types"
 
 export const shipsConfig: Record<ShipType, { amount: number, size: number }> = {
    'single': { amount: 4, size: 1 },
@@ -7,7 +7,7 @@ export const shipsConfig: Record<ShipType, { amount: number, size: number }> = {
    'quadro': { amount: 1, size: 4 }
 }
 
-export const initShips = (): IShipItem[] => {
+export const initShips = (user: User): IShipItem[] => {
    const ships: IShipItem[] = []
    let shipCounter = 1;
 
@@ -16,7 +16,7 @@ export const initShips = (): IShipItem[] => {
 
       for (let i: number = 0; i<amount; i++) {
          ships.push({
-            id: String(shipCounter++),
+            id: `${shipCounter++}-${user}`,
             state: 'ready',
             size,
             type: shipType as ShipType,

@@ -22,3 +22,5 @@ export type ShipType = 'single' | 'duo' | 'trio' | 'quadro';
 export type ShipState = 'ready' | 'placed' | 'damaged' | 'destroyed';
 
 export type FieldShipsMap = Map<string, IShipItem>;
+
+export type User = 'player' | 'enemy';
