@@ -1,12 +1,12 @@
 import { type FC } from 'react'
 import ActionButton from '../action-button/ActionButton';
-import { useCellsStore } from '../../store/useCellsStore';
+import { useGameStore } from '../../store/useGameStore';
 import { useSelectedCells } from '../../hooks/useSelectedCells';
 
 import styles from './Actions.module.scss';
 
 const Actions: FC = () => {
-   const { damageCell, placeShip } = useCellsStore();
+   const { damageCell, placeShip } = useGameStore();
    const selectedCells = useSelectedCells();
 
    if (!selectedCells.length) {

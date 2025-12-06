@@ -1,8 +1,8 @@
-import { useCellsStore } from "../store/useCellsStore";
+import { useGameStore } from "../store/useGameStore";
 import type { ShipType } from "../types/types";
 
 export const useShipsTrack = (): Record<ShipType, number> => {
-   const { ships } = useCellsStore();
+   const { ships } = useGameStore();
 
    return {
       single: ships.filter((ship) => ship.type === 'single' && ship.state === 'ready').length,

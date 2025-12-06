@@ -3,12 +3,12 @@ import { type FC } from 'react'
 import Cell from '../cell/Cell';
 import Actions from '../actions/Actions';
 import ShipsField from '../ships-field/ShipsField';
-import { useCellsStore } from '../../store/useCellsStore';
+import { useGameStore } from '../../store/useGameStore';
 
 import styles from './Field.module.scss';
 
 const Field: FC = () => {
-   const { cells } = useCellsStore();
+   const { cells } = useGameStore();
 
    if (!cells.length) {
       return null;

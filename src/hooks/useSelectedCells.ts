@@ -1,8 +1,8 @@
-import { useCellsStore } from "../store/useCellsStore"
+import { useGameStore } from "../store/useGameStore"
 import type { ICellItem } from "../types/types";
 
 export const useSelectedCells = (): ICellItem[] => {
-   const { cells } = useCellsStore();
+   const { cells } = useGameStore();
    const selectedCells: ICellItem[] = [];
 
    for (const row of cells) {
