@@ -6,24 +6,42 @@ import { shipTypeMap } from "../constants/constants";
 import type { IGameStoreState } from "./storeTypes";
 import type { IShipItem } from "../types/types";
 
+const getCellData = (cellId: string) => {
+   const cellSplitted = cellId.split('-');
+
+   const xy = cellSplitted[0];
+   const owner = cellSplitted[1];
+
+   const rowIndex = Math.floor(+xy / 10);
+   const colIndex = +xy % 10;
+
+   return { rowIndex, colIndex, owner };
+}
+
 export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    gameStatus: 'start',
-   cells: initField(),
-   ships: initShips(),
+   playerCells: initField('player'),
+   playerShips: initShips('player'),
+   enemyCells: initField('enemy'),
+   enemyShips: initShips('enemy'),
+
    setPlacementStatus: () => set(() => ({
       gameStatus: 'placement'
    })),
+   // placeEnemiesShips: () => set((state) => {
+      
+   // }),
    placeShip: (cellIds: string[]) => set((state) => {
       const shipSize = cellIds.length;
       const shipType = shipTypeMap[shipSize];
+      const { owner } = getCellData(cellIds[0]);
 
-      if (!shipType) return state;
+      if (!shipType || owner !== 'player') return state;
 
       const areCellsEmpty = cellIds.every((cellId) => {
-         const rowIndex = Math.floor(+cellId / 10);
-         const colIndex = +cellId % 10;
+         const { rowIndex, colIndex } = getCellData(cellId);
 
-         return !state.cells[rowIndex][colIndex].hasShip;
+         return !state.playerCells[rowIndex][colIndex].hasShip;
       });
 
       if (!areCellsEmpty) return state;
@@ -32,8 +50,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       let nothingNearby: boolean = true;
 
       for (const cellId of cellIds) {
-         const rowIndex = Math.floor(+cellId / 10);
-         const colIndex = +cellId % 10;
+         const { rowIndex, colIndex } = getCellData(cellId);
 
          for (let i=-1; i<2; i++) {
             for (let j=-1; j<2; j++) {
@@ -44,12 +61,12 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
                   continue;
                }
 
-               const currCellId = `${currRow}${currCol}`;
+               const currCellId = `${currRow}${currCol}-player`;
 
                if (!seenCells.has(currCellId)) {
                   seenCells.add(currCellId);
 
-                  if (state.cells[currRow][currCol].hasShip && !cellIds.includes(currCellId)) {
+                  if (state.playerCells[currRow][currCol].hasShip && !cellIds.includes(currCellId)) {
                      nothingNearby = false;
                      break;
                   }
@@ -64,7 +81,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
 
       let shipToPlace: IShipItem | null = null;
 
-      const updatedShips = state.ships.map((ship) => {
+      const updatedShips = state.playerShips.map((ship) => {
          if (!shipToPlace && ship.state === 'ready' && ship.type === shipType) {
             shipToPlace = { ...ship, state: 'placed', takenCellIds: cellIds };
 
@@ -76,9 +93,9 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
 
       if (!shipToPlace) return state;
 
-      const updatedCells = state.cells.map((row, rowIndex) => {
+      const updatedCells = state.playerCells.map((row, rowIndex) => {
          return row.map((cell, cellIndex) => {
-            const cellId = `${rowIndex}${cellIndex}`;
+            const cellId = `${rowIndex}${cellIndex}-player`;
 
             if (cellIds.includes(cellId)) {
                return { ...cell, hasShip: true, shipId: shipToPlace!.id, isSelected: false };
@@ -90,59 +107,73 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
 
       return { ...state, cells: updatedCells, ships: updatedShips };
    }),
-   damageCell: (cellId: string) => set((state) => ({
-      cells: state.cells.map((row) => 
-         row.map((cell) => cell.id === cellId ? 
-            { ...cell, isDamaged: true } : cell
-         )
-      ),
-      ships: state.ships.map((ship) => 
-         ship.takenCellIds.includes(cellId) ? 
-         { ...ship, state: 'damaged' } : ship
-      )
-   })),
-   toggleSelectCell: (id: string) => set((state) => {
+   damageCell: (cellId: string) => set((state) => {
+      const { owner } = getCellData(cellId);
+
+      if (owner === 'player') {
+         const updatedCells = state.playerCells.map((row) => 
+            row.map((cell) => cell.id === cellId ? 
+               { ...cell, isDamaged: true } : cell
+            )
+         );
+
+         const updatedShips = state.playerShips.map((ship) => 
+            ship.takenCellIds.includes(cellId) ? 
+            { ...ship, state: 'damaged' as const } : ship
+         );
+
+         return { ...state, playerCells: updatedCells, playerShips: updatedShips };
+      }
+
+      else if (owner === 'enemy') {
+         return state;
+      }
+
+      return state;
+   }),
+   toggleSelectCell: (cellId: string) => set((state) => {
+      const { owner } = getCellData(cellId);
+
+      if (owner !== 'enemy') return state;
+
       const currSelectedCells: string[] = [];
 
-      state.cells.forEach((row) => {
+      state.enemyCells.forEach((row) => {
          row.forEach((cell) => {
             if (cell.isSelected) currSelectedCells.push(cell.id);
          })
       })
 
-      if (currSelectedCells.includes(id)) {
-         return { cells: state.cells.map((row) => 
-            row.map((cell) => cell.id === id ?
-               { ...cell, isSelected: false } : cell
-            )
+      if (currSelectedCells.includes(cellId)) {
+         return { 
+            enemyCells: state.enemyCells.map((row) => 
+               row.map((cell) => cell.id === cellId ?
+                  { ...cell, isSelected: false } : cell
+               )
          )}
       }
 
       if (!currSelectedCells.length) {
          return { 
-            cells: state.cells.map((row => 
-               row.map((cell) => cell.id === id ? { ...cell, isSelected: true } : cell)
+            enemyCells: state.enemyCells.map((row => 
+               row.map((cell) => cell.id === cellId ? { ...cell, isSelected: true } : cell)
             ))
          }
       }
 
-
       if (currSelectedCells.length === 1) {
          const firstCell = currSelectedCells[0];
-         const firstRow = Math.floor(+firstCell / 10);
-         const firstCol = +firstCell % 10;
-
-         const newRow = Math.floor(+id / 10);
-         const newCol = +id % 10;
+         const { rowIndex: firstRow, colIndex: firstCol } = getCellData(firstCell);
+         const { rowIndex: newRow, colIndex: newCol } = getCellData(cellId);
 
          const isClose = 
             (firstRow === newRow && Math.abs(firstCol - newCol) === 1) ||
             (firstCol === newCol && Math.abs(firstRow - newRow) === 1);
 
          return {
-            cells: state.cells.map((row) =>
+            enemyCells: state.enemyCells.map((row) =>
                row.map((cell) =>
-                  cell.id === id ?
+                  cell.id === cellId ?
                      { ...cell, isSelected: isClose } :
                         (isClose ? cell : { ...cell, isSelected: false })
                )
@@ -156,8 +187,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       const allSameRow = rows.every((row) => row === rows[0]);
       const allSameCol = cols.every((col) => col === cols[0]);
 
-      const newRow = Math.floor(+id / 10);
-      const newCol = +id % 10;
+      const { rowIndex: newRow, colIndex: newCol } = getCellData(cellId);
 
       let isNearby = false;
 
@@ -176,9 +206,9 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
 
       if (!isNearby) {
          return {
-            cells: state.cells.map((row) =>
+            enemyCells: state.enemyCells.map((row) =>
                row.map((cell) =>
-                  cell.id === id ?
+                  cell.id === cellId ?
                      { ...cell, isSelected: true } : { ...cell, isSelected: false }
                )
             )
@@ -186,13 +216,13 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       }
 
       return {
-         cells: state.cells.map((row) => 
+         enemyCells: state.enemyCells.map((row) => 
             row.map((cell) =>
-               cell.id === id ? { ...cell, isSelected: true } : cell
+               cell.id === cellId ? { ...cell, isSelected: true } : cell
             )
          )
       }
    })
 }), 
-   { name: 'cells-storage' }
+   { name: 'sea-battle-storage' }
 ))
