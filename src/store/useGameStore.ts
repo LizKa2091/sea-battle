@@ -134,31 +134,40 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    toggleSelectCell: (cellId: string) => set((state) => {
       const { owner } = getCellData(cellId);
 
-      if (owner !== 'enemy' && state.gameStatus === 'in progress') return state;
+      const currCells = owner === 'player' ? state.playerCells : state.enemyCells;
+
+      if (owner === 'player' && state.gameStatus !== 'placement') return state;
+      if (owner === 'enemy' && state.gameStatus !== 'in progress') return state;
 
       const currSelectedCells: string[] = [];
 
-      state.enemyCells.forEach((row) => {
+      currCells.forEach((row) => {
          row.forEach((cell) => {
             if (cell.isSelected) currSelectedCells.push(cell.id);
          })
       })
 
       if (currSelectedCells.includes(cellId)) {
-         return { 
-            enemyCells: state.enemyCells.map((row) => 
-               row.map((cell) => cell.id === cellId ?
-                  { ...cell, isSelected: false } : cell
-               )
-         )}
+         const updatedCells = currCells.map((row) => 
+            row.map((cell) => cell.id === cellId ?
+               { ...cell, isSelected: false } : cell
+            )
+         )
+
+         return owner === 'player' ? 
+            { ...state, playerCells: updatedCells }
+            : { ...state, enemyCells: updatedCells };
       }
 
       if (!currSelectedCells.length) {
-         return { 
-            enemyCells: state.enemyCells.map((row => 
-               row.map((cell) => cell.id === cellId ? { ...cell, isSelected: true } : cell)
-            ))
-         }
+         
+         const updatedCells = currCells.map((row => 
+            row.map((cell) => cell.id === cellId ? { ...cell, isSelected: true } : cell)
+         ));
+
+         return owner === 'player' ? 
+            { ...state, playerCells: updatedCells }
+            : { ...state, enemyCells: updatedCells };
       }
 
       if (currSelectedCells.length === 1) {
@@ -170,15 +179,17 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
             (firstRow === newRow && Math.abs(firstCol - newCol) === 1) ||
             (firstCol === newCol && Math.abs(firstRow - newRow) === 1);
 
-         return {
-            enemyCells: state.enemyCells.map((row) =>
-               row.map((cell) =>
-                  cell.id === cellId ?
-                     { ...cell, isSelected: isClose } :
-                        (isClose ? cell : { ...cell, isSelected: false })
-               )
+         const updatedCells = currCells.map((row) =>
+            row.map((cell) =>
+               cell.id === cellId ?
+                  { ...cell, isSelected: isClose } :
+                     (isClose ? cell : { ...cell, isSelected: false })
             )
-         }
+         )
+
+         return owner === 'player' ? 
+            { ...state, playerCells: updatedCells }
+            : { ...state, enemyCells: updatedCells };
       }
 
       const rows = currSelectedCells.map((cell) => Math.floor(+cell / 10));
@@ -205,23 +216,27 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       }
 
       if (!isNearby) {
-         return {
-            enemyCells: state.enemyCells.map((row) =>
-               row.map((cell) =>
-                  cell.id === cellId ?
-                     { ...cell, isSelected: true } : { ...cell, isSelected: false }
-               )
-            )
-         }
-      }
-
-      return {
-         enemyCells: state.enemyCells.map((row) => 
+         const updatedCells = currCells.map((row) =>
             row.map((cell) =>
-               cell.id === cellId ? { ...cell, isSelected: true } : cell
+               cell.id === cellId ?
+                  { ...cell, isSelected: true } : { ...cell, isSelected: false }
             )
          )
+
+         return owner === 'player' ? 
+            { ...state, playerCells: updatedCells }
+            : { ...state, enemyCells: updatedCells };
       }
+
+      const updatedCells = state.enemyCells.map((row) => 
+         row.map((cell) =>
+            cell.id === cellId ? { ...cell, isSelected: true } : cell
+         )
+      );
+
+      return owner === 'player' ? 
+         { ...state, playerCells: updatedCells }
+         : { ...state, enemyCells: updatedCells };
    }),
    resetGame: () => set(() => ({
       playerCells: initField('player'),
