@@ -6,9 +6,11 @@ import { useShipsTrack } from '../../hooks/useShipsTrack';
 import type { ShipType } from '../../types/types';
 
 import styles from './ShipsField.module.scss';
+import { useGameStore } from '../../store/useGameStore';
 
 const ShipsField: FC = () => {
-   const shipsTrack = useShipsTrack();
+   const { gameStatus } = useGameStore();
+   const shipsTrack = useShipsTrack(gameStatus);
 
    return (
       <div className={styles.field}>
