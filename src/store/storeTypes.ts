@@ -10,4 +10,5 @@ export interface IGameStoreState {
    placeShip: (cellIds: string[]) => void;
    damageCell: (cellId: string) => void;
    toggleSelectCell: (id: string) => void;
+   resetGame: () => void;
 }

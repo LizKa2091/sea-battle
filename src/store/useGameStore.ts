@@ -222,7 +222,13 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
             )
          )
       }
-   })
+   }),
+   resetGame: () => set(() => ({
+      playerCells: initField('player'),
+      playerShips: initShips('player'),
+      enemyCells: initField('enemy'),
+      enemyShips: initShips('enemy'),
+   }))
 }), 
    { name: 'sea-battle-storage' }
 ))

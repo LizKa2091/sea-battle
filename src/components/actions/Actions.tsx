@@ -11,7 +11,7 @@ interface IUserActions {
 }
 
 const Actions: FC<IUserActions> = ({ user }) => {
-   const { damageCell, placeShip, gameStatus } = useGameStore();
+   const { damageCell, placeShip, resetGame, gameStatus } = useGameStore();
    const selectedCells = useSelectedCells(gameStatus);
 
    if (!selectedCells.length) {
@@ -28,6 +28,7 @@ const Actions: FC<IUserActions> = ({ user }) => {
          return (
             <>
                <ActionButton text='Атаковать' onClick={() => damageCell(selectedCells[0].id)} />
+               <ActionButton text='Начать игру заново' onClick={resetGame} />
             </>
          )
       }
