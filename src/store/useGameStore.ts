@@ -19,7 +19,7 @@ const getCellData = (cellId: string) => {
 }
 
 export const useGameStore = create<IGameStoreState>()(persist((set) => ({
-   gameStatus: 'start',
+   gameStatus: 'in progress',
    playerCells: initField('player'),
    playerShips: initShips('player'),
    enemyCells: initField('enemy'),
@@ -28,9 +28,6 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    setPlacementStatus: () => set(() => ({
       gameStatus: 'placement'
    })),
-   // placeEnemiesShips: () => set((state) => {
-      
-   // }),
    placeShip: (cellIds: string[]) => set((state) => {
       const shipSize = cellIds.length;
       const shipType = shipTypeMap[shipSize];
@@ -177,7 +174,18 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       }
 
       else if (owner === 'enemy') {
-         return state;
+         const updatedCells = state.enemyCells.map((row) => 
+            row.map((cell) => cell.id === cellId ? 
+               { ...cell, isDamaged: true } : cell
+            )
+         );
+
+         const updatedShips = state.enemyShips.map((ship) => 
+            ship.takenCellIds.includes(cellId) ? 
+            { ...ship, state: 'damaged' as const } : ship
+         );
+
+         return { ...state, enemyCells: updatedCells, enemyShips: updatedShips };
       }
 
       return state;
@@ -189,6 +197,14 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
 
       if (owner === 'player' && state.gameStatus !== 'placement') return state;
       if (owner === 'enemy' && state.gameStatus !== 'in progress') return state;
+
+      if (owner === 'enemy' && state.gameStatus === 'in progress') {
+         const updatedCells = currCells.map((row) => 
+            row.map((cell) => ({ ...cell, isSelected: cell.id === cellId && !cell.isSelected }))
+         )
+
+         return { ...state, enemyCells: updatedCells };
+      }
 
       const currSelectedCells: string[] = [];
 
