@@ -34,7 +34,7 @@ const Field: FC<IFieldProps> = ({ cells, user }) => {
             </div>
             <Actions user={user} />
          </div>
-         <ShipsField />
+         <ShipsField user={user} />
       </div>
    )
 }
