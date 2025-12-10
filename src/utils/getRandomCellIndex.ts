@@ -1,4 +1,4 @@
-export const getRandomCellId = (idsList: string[]): number | null => {
+export const getRandomCellIndex = (idsList: string[]): number | null => {
    const splittedIdsList = idsList;
 
    if (idsList.length) {
