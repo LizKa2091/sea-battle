@@ -4,7 +4,7 @@ import { initField } from "../utils/initField";
 import { initShips } from "../utils/initShips";
 import { shipTypeMap } from "../constants/constants";
 import type { IGameStoreState } from "./storeTypes";
-import type { IShipItem } from "../types/types";
+import type { ICellItem, IShipItem } from "../types/types";
 
 const getCellData = (cellId: string) => {
    const cellSplitted = cellId.split('-');
@@ -200,7 +200,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       return state;
    }),
    toggleSelectCell: (cellId: string) => set((state) => {
-      const { owner } = getCellData(cellId);
+      const { owner, rowIndex, colIndex } = getCellData(cellId);
 
       const currCells = owner === 'player' ? state.playerCells : state.enemyCells;
 
@@ -208,6 +208,10 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       if (owner === 'enemy' && state.gameStatus !== 'in progress') return state;
 
       if (owner === 'enemy' && state.gameStatus === 'in progress') {
+         const targetCell: ICellItem = currCells[rowIndex][colIndex];
+
+         if (targetCell.isDamaged) return state;   
+
          const updatedCells = currCells.map((row) => 
             row.map((cell) => ({ ...cell, isSelected: cell.id === cellId && !cell.isSelected }))
          )
