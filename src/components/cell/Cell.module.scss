@@ -16,6 +16,48 @@
       background-color: yellow;
    }
    &.damaged {
-      background-color: #ff0000;
+      position: relative;
+
+      &::after {
+         content: '';
+         border-radius: 16px;
+         background-color: #ff0000;
+         width: 15px;
+         height: 15px;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+      }
+   }
+   &.damagedShip {
+      background-color: gray;
+      position: relative;
+
+      &::after {
+         content: '';
+         border-radius: 16px;
+         background-color: #ff0000;
+         width: 15px;
+         height: 15px;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+      }
+   }
+   &.destroyedShip {
+      background-color: gray;
+      position: relative;
+
+      &::after {
+         content: 'X';
+         color: #ff0000;
+         font-size: 25px;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+      }
    }
 }

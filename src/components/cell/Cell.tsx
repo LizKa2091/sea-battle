@@ -14,7 +14,7 @@ interface ICellProps {
 const Cell: FC<ICellProps> = ({ cellData, id, user }) => {
    const { toggleSelectCell } = useGameStore();
 
-   const { hasShip, isDamaged, isSelected } = cellData;
+   const { hasShip, isDamaged, isSelected, isShipDestroyed } = cellData;
 
    return (
       <div 
@@ -23,9 +23,10 @@ const Cell: FC<ICellProps> = ({ cellData, id, user }) => {
             clsx(
                styles.cell, 
                user === 'enemy' && styles.enemyShip,
-               hasShip && isDamaged && styles.damagedShip,
+               hasShip && isShipDestroyed && styles.destroyedShip,
+               hasShip && isDamaged && !isShipDestroyed && styles.damagedShip,
                hasShip && styles.ship, 
-               isDamaged && styles.damaged, 
+               isDamaged && !hasShip && styles.damaged, 
                isSelected && styles.selected
             )
       } />
