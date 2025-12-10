@@ -27,7 +27,12 @@ const Field: FC<IFieldProps> = ({ cells, user }) => {
                {cells.map((row, index) => 
                   <div key={index} className={styles.row}>
                      {row.map((cell) => (
-                        <Cell key={cell.id} id={cell.id} cellData={cell} />
+                        <Cell 
+                           key={cell.id} 
+                           id={cell.id} 
+                           cellData={cell} 
+                           user={user}
+                        />
                      ))}
                   </div>
                )}
