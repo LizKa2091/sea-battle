@@ -1,23 +1,26 @@
 import { useCallback } from "react";
 import { useGameStore } from "../store/useGameStore";
-import { getRandomCellId } from "../utils/getRandomCellId";
+import { getRandomCellIndex } from "../utils/getRandomCellIndex";
 
 export const useDamageRandomCell = () => {
    const { playerCells, damageCell } = useGameStore();
 
    const damageRandomCell = useCallback(() => {
-      const undamagedCellIds: string[] = [];
+      const undamagedCellsIdsSet = new Set<string>();
 
       playerCells.forEach((row) => 
          row.forEach((cell) => 
-            !cell.isDamaged ? undamagedCellIds.push(cell.id) : cell
+            !cell.isDamaged ? undamagedCellsIdsSet.add(cell.id) : cell
          )
       )
 
-      if (undamagedCellIds.length) {
-         const cellIdToDamage = getRandomCellId(undamagedCellIds);
+      if (undamagedCellsIdsSet.size > 0) {
+         const undamagedCellsArr = Array.from(undamagedCellsIdsSet);
+         const cellIndexToDamage: number | null = getRandomCellIndex(undamagedCellsArr);
 
-         if (cellIdToDamage) damageCell(undamagedCellIds[cellIdToDamage]);
+         if (cellIndexToDamage !== null) {
+            damageCell(undamagedCellsArr[cellIndexToDamage]);
+         }
       }
    }, [playerCells, damageCell]);
 
