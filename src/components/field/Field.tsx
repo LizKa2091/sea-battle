@@ -20,18 +20,26 @@ const Field: FC<IFieldProps> = ({ cells, user }) => {
    return (
       <div className={styles.container}>
          <div className={styles.fieldContainer}>
+            <p className={styles.filedUser}>
+               {user === 'player' ? 'Твоё поле' : 'Поле врага'}
+            </p>
             <div className={styles.fieldRows}>
                {cells.map((row, index) => 
                   <div key={index} className={styles.row}>
                      {row.map((cell) => (
-                        <Cell key={cell.id} id={cell.id} cellData={cell} />
+                        <Cell 
+                           key={cell.id} 
+                           id={cell.id} 
+                           cellData={cell} 
+                           user={user}
+                        />
                      ))}
                   </div>
                )}
             </div>
-            <Actions />
+            <Actions user={user} />
          </div>
-         <ShipsField />
+         <ShipsField user={user} />
       </div>
    )
 }

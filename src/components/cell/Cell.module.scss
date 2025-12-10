@@ -6,13 +6,16 @@
    border-radius: 5px;
    cursor: pointer;
 
+   &.ship {
+      background-color: gray;
+   }
+   &.enemyShip {
+      background-color: rgb(0, 182, 182);
+   }
    &.selected {
       background-color: yellow;
    }
    &.damaged {
       background-color: #ff0000;
-   }
-   &.ship {
-      background-color: gray;
    }
 }
