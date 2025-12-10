@@ -28,6 +28,9 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    setPlacementStatus: () => set(() => ({
       gameStatus: 'placement'
    })),
+   setInProgressStatus: () => set(() => ({
+      gameStatus: 'in progress'
+   })),
    placeShip: (cellIds: string[]) => set((state) => {
       const shipSize = cellIds.length;
       const shipType = shipTypeMap[shipSize];
@@ -305,6 +308,9 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
          { ...state, playerCells: updatedCells }
          : { ...state, enemyCells: updatedCells };
    }),
+   resetEnemyShips: () => set(() => ({
+      enemyShips: initShips('enemy')
+   })),
    resetGame: () => set(() => ({
       playerCells: initField('player'),
       playerShips: initShips('player'),
