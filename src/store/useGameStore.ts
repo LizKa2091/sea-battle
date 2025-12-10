@@ -28,8 +28,14 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    setPlacementStatus: () => set(() => ({
       gameStatus: 'placement'
    })),
-   setInProgressStatus: () => set(() => ({
-      gameStatus: 'in progress'
+   setInProgressStatus: () => set((state) => ({
+      gameStatus: 'in progress',
+      playerCells: state.playerCells.map((row) =>
+         row.map((cell) => ({
+            ...cell,
+            isSelected: false
+         }))
+      )
    })),
    placeShip: (cellIds: string[]) => set((state) => {
       const shipSize = cellIds.length;
