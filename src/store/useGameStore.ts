@@ -262,8 +262,17 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
             : { ...state, enemyCells: updatedCells };
       }
 
-      const rows = currSelectedCells.map((cell) => Math.floor(+cell / 10));
-      const cols = currSelectedCells.map((cell) => +cell % 10);
+      const rows = currSelectedCells.map((cellId) => {
+         const [rowCol] = cellId.split('-');
+
+         return +rowCol[0];
+      })
+
+      const cols = currSelectedCells.map((cellId) => {
+         const [rowCol] = cellId.split('-');
+
+         return +rowCol[1];
+      })
 
       const allSameRow = rows.every((row) => row === rows[0]);
       const allSameCol = cols.every((col) => col === cols[0]);
@@ -273,16 +282,20 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       let isNearby = false;
 
       if (allSameRow) {
-         const minCol = Math.min(...cols);
-         const maxCol = Math.max(...cols);
+         const sortedCols = [...cols].sort((a, b) => a - b);
 
-         isNearby = newRow === rows[0] && (newCol === minCol - 1 || newCol === maxCol + 1);
+         isNearby = newRow === rows[0] && (
+            newCol === sortedCols[0] - 1 ||
+            newCol === sortedCols[sortedCols.length-1] + 1
+         )
       }
       else if (allSameCol) {
-         const minRow = Math.min(...rows);
-         const maxRow = Math.max(...rows);
-         
-         isNearby = newCol === cols[0] && (newRow === minRow - 1 || newRow === maxRow + 1);
+         const sortedRows = [...rows].sort((a, b) => a - b);
+
+         isNearby = newCol === cols[0] && (
+            newRow === sortedRows[0] - 1 ||
+            newRow === sortedRows[sortedRows.length-1] + 1
+         )
       }
 
       if (!isNearby) {
@@ -298,7 +311,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
             : { ...state, enemyCells: updatedCells };
       }
 
-      const updatedCells = state.enemyCells.map((row) => 
+      const updatedCells = currCells.map((row) => 
          row.map((cell) =>
             cell.id === cellId ? { ...cell, isSelected: true } : cell
          )
