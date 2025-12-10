@@ -1,6 +1,7 @@
-import { type FC } from 'react';
+import { useMemo, type FC } from 'react';
 
 import ShipCell from '../ship-cell/ShipCell';
+import ActionButton from '../action-button/ActionButton';
 import { shipsConfig } from '../../utils/initShips';
 import { useShipsTrack } from '../../hooks/useShipsTrack';
 import { useGameStore } from '../../store/useGameStore';
@@ -13,13 +14,35 @@ interface IShipsFieldProps {
 }
 
 const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
-   const { gameStatus } = useGameStore();
+   const { gameStatus, setInProgressStatus } = useGameStore();
    const shipsTrack = useShipsTrack(gameStatus);
+
+   const areAllShipsPlaced = useMemo(() => {
+      if (gameStatus === 'placement' && user === 'player') {
+         return (
+            shipsTrack.single === 0 && 
+            shipsTrack.duo === 0 && 
+            shipsTrack.trio === 0 && 
+            shipsTrack.quadro === 0
+         )
+      }
+
+      return false;
+   }, [shipsTrack.single, shipsTrack.duo, shipsTrack.trio, shipsTrack.quadro, gameStatus, user])
 
    if (gameStatus === 'placement' && user === 'enemy' 
       || gameStatus === 'in progress' && user === 'player'
    ) {
       return null;
+   }
+
+   if (areAllShipsPlaced) {
+      return (
+         <div className={styles.field}>
+            <p>Все корабли расставлены, вы готовы начать игру?</p>
+            <ActionButton text='Начать' onClick={setInProgressStatus} />
+         </div>
+      )
    }
 
    return (
