@@ -1,12 +1,10 @@
 import { useMemo, type FC } from 'react';
-import clsx from 'clsx';
 
 import ShipCell from '../ship-cell/ShipCell';
 import ActionButton from '../action-button/ActionButton';
 import { shipsConfig } from '../../utils/initShips';
 import { useShipsTrack } from '../../hooks/useShipsTrack';
 import { useGameStore } from '../../store/useGameStore';
-import { useGameResult } from '../../hooks/useGameResult';
 import type { ShipType, User } from '../../types/types';
 
 import styles from './ShipsField.module.scss';
@@ -16,14 +14,9 @@ interface IShipsFieldProps {
 }
 
 const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
-   const { gameStatus, currTurn, setInProgressStatus } = useGameStore();
-   const { getGameResult } = useGameResult(gameStatus);
+   const { gameStatus, setInProgressStatus } = useGameStore();
    const shipsTrack = useShipsTrack(gameStatus, user);
-   const currGameResult = getGameResult();
-   const isPlayersTurn: boolean = !!(currTurn === 'player');
    
-   console.log(currGameResult);
-
    const areAllShipsPlaced = useMemo(() => {
       if (gameStatus === 'placement' && user === 'player' && shipsTrack) {
          return (
@@ -37,7 +30,8 @@ const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
       return false;
    }, [shipsTrack, gameStatus, user])
 
-   if (gameStatus === 'placement' && user === 'enemy' 
+   if (
+      gameStatus === 'placement' && user === 'enemy' 
       || gameStatus === 'in progress' && user === 'player'
       || !shipsTrack
    ) {
@@ -55,9 +49,6 @@ const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
 
    return (
       <div className={styles.field}>
-         <p className={clsx(styles.turnInfo, isPlayersTurn && styles.player)}>
-            {isPlayersTurn ? 'Вы ходите' : 'Ход врага'}
-         </p>
          {gameStatus === 'placement' ? 'Осталось расставить' : 'Осталось уничтожить'}
          {Object.entries(shipsTrack).map(([type, amount]) => {
             const typed = type as ShipType;
