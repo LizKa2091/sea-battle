@@ -167,37 +167,53 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    damageCell: (cellId: string) => set((state) => {
       const { owner } = getCellData(cellId);
 
+      const currCells = owner === 'player' ? state.playerCells : state.enemyCells;
+      const currShips = owner === 'player' ? state.playerShips : state.enemyShips;
+
+      const currShip = currShips.find((ship) => ship.takenCellIds.includes(cellId));
+
+      const updatedCells = currCells.map((row) => 
+         row.map((cell) =>
+            cell.id === cellId ? { ...cell, isDamaged: true } : cell
+         )
+      )
+
+      if (!currShip) {
+         return owner === 'player' ? 
+            { ...state, playerCells: updatedCells } : { ...state, enemyCells: updatedCells };
+      }
+
+      const areAllCellsDamaged = currShip.takenCellIds.every((shipCell) => {
+         const { rowIndex, colIndex } = getCellData(shipCell);
+
+         return updatedCells[rowIndex][colIndex].isDamaged;
+      })
+
+      const updatedShips = currShips.map((ship) => {
+         if (ship.id === currShip.id) {
+            return { ...ship, state: areAllCellsDamaged ? 'destroyed' as const : 'damaged' as const }
+         }
+         return ship;
+      })
+
+      const resultCells = areAllCellsDamaged ?
+         updatedCells.map((row) =>
+            row.map((cell) => {
+               if (currShip.takenCellIds.includes(cell.id)) {
+                  return { ...cell, isShipDestroyed: true }
+               }
+               
+               return cell;
+            })
+         ) 
+      : updatedCells;
+      
       if (owner === 'player') {
-         const updatedCells = state.playerCells.map((row) => 
-            row.map((cell) => cell.id === cellId ? 
-               { ...cell, isDamaged: true } : cell
-            )
-         );
-
-         const updatedShips = state.playerShips.map((ship) => 
-            ship.takenCellIds.includes(cellId) ? 
-            { ...ship, state: 'damaged' as const } : ship
-         );
-
-         return { ...state, playerCells: updatedCells, playerShips: updatedShips };
+         return { ...state, playerCells: resultCells, playerShips: updatedShips }
       }
-
-      else if (owner === 'enemy') {
-         const updatedCells = state.enemyCells.map((row) => 
-            row.map((cell) => cell.id === cellId ? 
-               { ...cell, isDamaged: true } : cell
-            )
-         );
-
-         const updatedShips = state.enemyShips.map((ship) => 
-            ship.takenCellIds.includes(cellId) ? 
-            { ...ship, state: 'damaged' as const } : ship
-         );
-
-         return { ...state, enemyCells: updatedCells, enemyShips: updatedShips };
+      else {
+         return { ...state, enemyCells: resultCells, enemyShips: updatedShips }
       }
-
-      return state;
    }),
    toggleSelectCell: (cellId: string) => set((state) => {
       const { owner, rowIndex, colIndex } = getCellData(cellId);

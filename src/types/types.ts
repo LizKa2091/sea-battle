@@ -4,6 +4,7 @@ export interface ICellItem {
    isDamaged: boolean;
    isSelected: boolean;
    shipId?: string;
+   isShipDestroyed?: boolean;
 }
 
 export interface IShipItem {
