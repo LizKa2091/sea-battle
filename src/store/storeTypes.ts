@@ -1,12 +1,14 @@
-import type { GameStatus, ICellItem, IShipItem, User } from "../types/types";
+import type { GameStatus, ICellItem, IMessage, IShipItem, User } from "../types/types";
 
 export interface IGameStoreState {
    gameStatus: GameStatus;
    currTurn: User;
+   notificationMessages: IMessage[];
    playerCells: ICellItem[][],
    playerShips: IShipItem[],
    enemyCells: ICellItem[][],
    enemyShips: IShipItem[],
+   removeMessage: (id: string) => void;
    setPlacementStatus: () => void;
    setInProgressStatus: () => void;
    setFinalStatus: (winner: User) => void;
