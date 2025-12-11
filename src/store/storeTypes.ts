@@ -1,7 +1,8 @@
-import type { GameStatus, ICellItem, IShipItem } from "../types/types";
+import type { GameStatus, ICellItem, IShipItem, User } from "../types/types";
 
 export interface IGameStoreState {
    gameStatus: GameStatus;
+   currTurn: User;
    playerCells: ICellItem[][],
    playerShips: IShipItem[],
    enemyCells: ICellItem[][],
