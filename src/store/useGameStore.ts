@@ -4,7 +4,7 @@ import { initField } from "../utils/initField";
 import { initShips } from "../utils/initShips";
 import { shipTypeMap } from "../constants/constants";
 import type { IGameStoreState } from "./storeTypes";
-import type { ICellItem, IShipItem } from "../types/types";
+import type { ICellItem, IShipItem, User } from "../types/types";
 
 const getCellData = (cellId: string) => {
    const cellSplitted = cellId.split('-');
@@ -32,6 +32,16 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    setInProgressStatus: () => set((state) => ({
       gameStatus: 'in progress',
       playerCells: state.playerCells.map((row) =>
+         row.map((cell) => ({
+            ...cell,
+            isSelected: false
+         }))
+      )
+   })),
+
+   setFinalStatus: (winner: User) => set((state) => ({
+      gameStatus: winner === 'player' ? 'triumph' : 'defeat',
+      enemyCells: state.enemyCells.map((row) =>
          row.map((cell) => ({
             ...cell,
             isSelected: false

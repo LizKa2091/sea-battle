@@ -18,8 +18,8 @@ export const useGameResult = (gameSatus: GameStatus) => {
          currEnemyTrack?.trio === 0 &&
          currEnemyTrack?.quadro === 0;
 
-      if (arePlayerShipsDestroyed) return 'player';
-      if (areEnemyShipsDestroyed) return 'enemy';
+      if (arePlayerShipsDestroyed) return 'enemy';
+      if (areEnemyShipsDestroyed) return 'player';
       return null;
    })
 
