@@ -6,6 +6,7 @@ import ActionButton from '../action-button/ActionButton';
 import { shipsConfig } from '../../utils/initShips';
 import { useShipsTrack } from '../../hooks/useShipsTrack';
 import { useGameStore } from '../../store/useGameStore';
+import { useGameResult } from '../../hooks/useGameResult';
 import type { ShipType, User } from '../../types/types';
 
 import styles from './ShipsField.module.scss';
@@ -16,11 +17,15 @@ interface IShipsFieldProps {
 
 const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
    const { gameStatus, currTurn, setInProgressStatus } = useGameStore();
-   const shipsTrack = useShipsTrack(gameStatus);
+   const { getGameResult } = useGameResult(gameStatus);
+   const shipsTrack = useShipsTrack(gameStatus, user);
+   const currGameResult = getGameResult();
    const isPlayersTurn: boolean = !!(currTurn === 'player');
+   
+   console.log(currGameResult);
 
    const areAllShipsPlaced = useMemo(() => {
-      if (gameStatus === 'placement' && user === 'player') {
+      if (gameStatus === 'placement' && user === 'player' && shipsTrack) {
          return (
             shipsTrack.single === 0 && 
             shipsTrack.duo === 0 && 
@@ -30,14 +35,15 @@ const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
       }
 
       return false;
-   }, [shipsTrack.single, shipsTrack.duo, shipsTrack.trio, shipsTrack.quadro, gameStatus, user])
+   }, [shipsTrack, gameStatus, user])
 
    if (gameStatus === 'placement' && user === 'enemy' 
       || gameStatus === 'in progress' && user === 'player'
+      || !shipsTrack
    ) {
       return null;
    }
-
+  
    if (areAllShipsPlaced) {
       return (
          <div className={styles.field}>
