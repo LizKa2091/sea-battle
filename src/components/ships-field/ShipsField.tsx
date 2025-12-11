@@ -1,5 +1,4 @@
 import { useMemo, type FC } from 'react';
-import clsx from 'clsx';
 
 import ShipCell from '../ship-cell/ShipCell';
 import ActionButton from '../action-button/ActionButton';
@@ -15,12 +14,11 @@ interface IShipsFieldProps {
 }
 
 const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
-   const { gameStatus, currTurn, setInProgressStatus } = useGameStore();
-   const shipsTrack = useShipsTrack(gameStatus);
-   const isPlayersTurn: boolean = !!(currTurn === 'player');
-
+   const { gameStatus, setInProgressStatus } = useGameStore();
+   const shipsTrack = useShipsTrack(gameStatus, user);
+   
    const areAllShipsPlaced = useMemo(() => {
-      if (gameStatus === 'placement' && user === 'player') {
+      if (gameStatus === 'placement' && user === 'player' && shipsTrack) {
          return (
             shipsTrack.single === 0 && 
             shipsTrack.duo === 0 && 
@@ -30,14 +28,16 @@ const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
       }
 
       return false;
-   }, [shipsTrack.single, shipsTrack.duo, shipsTrack.trio, shipsTrack.quadro, gameStatus, user])
+   }, [shipsTrack, gameStatus, user])
 
-   if (gameStatus === 'placement' && user === 'enemy' 
+   if (
+      gameStatus === 'placement' && user === 'enemy' 
       || gameStatus === 'in progress' && user === 'player'
+      || !shipsTrack
    ) {
       return null;
    }
-
+  
    if (areAllShipsPlaced) {
       return (
          <div className={styles.field}>
@@ -49,9 +49,6 @@ const ShipsField: FC<IShipsFieldProps> = ({ user }) => {
 
    return (
       <div className={styles.field}>
-         <p className={clsx(styles.turnInfo, isPlayersTurn && styles.player)}>
-            {isPlayersTurn ? 'Вы ходите' : 'Ход врага'}
-         </p>
          {gameStatus === 'placement' ? 'Осталось расставить' : 'Осталось уничтожить'}
          {Object.entries(shipsTrack).map(([type, amount]) => {
             const typed = type as ShipType;

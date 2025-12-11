@@ -2,7 +2,7 @@ import { type FC } from 'react'
 
 import Cell from '../cell/Cell';
 import Actions from '../actions/Actions';
-import ShipsField from '../ships-field/ShipsField';
+import InfoBar from '../info-bar/InfoBar';
 import type { ICellItem, User } from '../../types/types';
 
 import styles from './Field.module.scss';
@@ -39,7 +39,7 @@ const Field: FC<IFieldProps> = ({ cells, user }) => {
             </div>
             <Actions user={user} />
          </div>
-         <ShipsField user={user} />
+         <InfoBar user={user} />
       </div>
    )
 }

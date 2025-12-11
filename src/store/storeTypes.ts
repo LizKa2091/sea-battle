@@ -9,6 +9,7 @@ export interface IGameStoreState {
    enemyShips: IShipItem[],
    setPlacementStatus: () => void;
    setInProgressStatus: () => void;
+   setFinalStatus: (winner: User) => void;
    placeShip: (cellIds: string[]) => void;
    damageCell: (cellId: string) => void;
    toggleSelectCell: (id: string) => void;
