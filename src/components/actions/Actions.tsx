@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, type FC } from 'react'
 import ActionButton from '../action-button/ActionButton';
 import { useGameStore } from '../../store/useGameStore';
 import { useSelectedCells } from '../../hooks/useSelectedCells';
@@ -13,30 +13,24 @@ interface IUserActions {
 }
 
 const Actions: FC<IUserActions> = ({ user }) => {
-   const { damageCell, placeShip, resetGame, gameStatus } = useGameStore();
+   const { damageCell, placeShip, resetGame, currTurn, gameStatus } = useGameStore();
    const { damageRandomCell } = useDamageRandomCell();
    const { placeRandomShips } = usePlaceRandomShips();
    const selectedCells = useSelectedCells(gameStatus);
 
-   const [isEnemyTurn, setIsEnemyTurn] = useState<boolean>(false);
-   const [isEnemyReady, setIsEnemyReady] = useState<boolean>(true);
-
    useEffect(() => {
       let timer: ReturnType<typeof setTimeout>;
 
-      if (isEnemyTurn) {
+      if (currTurn === 'enemy') {
          timer = setTimeout(() => {
             damageRandomCell();
-
-            setIsEnemyTurn(false);
-            setIsEnemyReady(true);
          }, 3000)
       }
 
       return () => {
          if (timer) clearTimeout(timer);
       }
-   }, [isEnemyTurn, damageRandomCell]);
+   }, [currTurn, damageRandomCell]);
 
    if (!selectedCells.length) {
       return null;
@@ -46,8 +40,6 @@ const Actions: FC<IUserActions> = ({ user }) => {
 
    const handleDamageCell = () => {
       damageCell(selectedCells[0].id);
-      setIsEnemyTurn(true);
-      setIsEnemyReady(false);
    }
 
    const handleRestartGame = () => {
@@ -65,7 +57,7 @@ const Actions: FC<IUserActions> = ({ user }) => {
                <ActionButton 
                   text='Атаковать' 
                   onClick={handleDamageCell} 
-                  disabled={!isEnemyReady}
+                  disabled={currTurn === 'enemy'}
                />
                <ActionButton 
                   text='Начать игру заново' 

@@ -20,6 +20,7 @@ const getCellData = (cellId: string) => {
 
 export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    gameStatus: 'in progress',
+   currTurn: 'player',
    playerCells: initField('player'),
    playerShips: initShips('player'),
    enemyCells: initField('enemy'),
@@ -179,8 +180,11 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       )
 
       if (!currShip) {
+         const updatedCurrTurn = state.currTurn === 'player' ? 'enemy' : 'player';
+
          return owner === 'player' ? 
-            { ...state, playerCells: updatedCells } : { ...state, enemyCells: updatedCells };
+            { ...state, playerCells: updatedCells, currTurn: updatedCurrTurn } :
+            { ...state, enemyCells: updatedCells, currTurn: updatedCurrTurn };
       }
 
       const areAllCellsDamaged = currShip.takenCellIds.every((shipCell) => {
