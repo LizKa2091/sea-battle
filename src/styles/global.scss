@@ -3,6 +3,12 @@ button {
 }
 
 .pageContainer {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   gap: 50px;
+   height: 100vh;
    max-height: 100vh;
    overflow-y: hidden;
 }

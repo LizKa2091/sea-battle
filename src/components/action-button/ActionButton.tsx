@@ -1,4 +1,6 @@
-import { type FC } from 'react'
+import { type FC } from 'react';
+
+import styles from './ActionButton.module.scss';
 
 interface IActionButtonProps {
    text: string;
@@ -8,7 +10,13 @@ interface IActionButtonProps {
 
 const ActionButton: FC<IActionButtonProps> = ({ text, onClick, disabled }) => {
    return (
-      <button onClick={onClick} disabled={disabled}>{text}</button>
+      <button 
+         onClick={onClick} 
+         disabled={disabled}
+         className={styles.button}
+      >
+         {text}
+      </button>
    )
 }
 

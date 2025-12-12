@@ -3,13 +3,13 @@ import { useEffect, type FC } from 'react';
 import ActionButton from '../../action-button/ActionButton';
 import { useGameResult } from '../../../hooks/useGameResult';
 import { useGameStore } from '../../../store/useGameStore';
-import { useNavigate } from 'react-router-dom';
+import { usePlaceRandomShips } from '../../../hooks/usePlaceRandomShips';
 
 const GameResult: FC = () => {
    const { gameStatus, resetGame, setFinalStatus } = useGameStore();
    const { getGameResult } = useGameResult(gameStatus);
+   const { placeRandomShips } = usePlaceRandomShips();
    const currGameResult = getGameResult();
-   const navigate = useNavigate();
 
    useEffect(() => {
       if (currGameResult && gameStatus === 'in progress') {
@@ -17,10 +17,9 @@ const GameResult: FC = () => {
       }
    }, [currGameResult, gameStatus, setFinalStatus]);
 
-   const handleMainMenu = () => {
+   const handleRestartGame = () => {
       resetGame();
-
-      navigate('/')
+      placeRandomShips();
    }
 
    if (gameStatus !== 'triumph' && gameStatus !== 'defeat') {
@@ -32,7 +31,7 @@ const GameResult: FC = () => {
          <p>
             {gameStatus === 'triumph' ? 'Поздравляем с победой!' : 'К сожалению, вы проиграли'}
          </p>
-         <ActionButton text='Главное меню' onClick={handleMainMenu} />
+         <ActionButton text='Начать новую игру' onClick={handleRestartGame} />
       </div>
    )
 }
