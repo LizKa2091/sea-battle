@@ -1,0 +1,10 @@
+.container {
+   display: flex;
+   flex-direction: column;
+   gap: 5px;
+   position: absolute;
+   top: 2.5%;
+   right: 2.5%;
+   max-height: calc(100vh - 5%);
+   overflow-y: auto;
+}

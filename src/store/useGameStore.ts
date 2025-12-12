@@ -18,14 +18,22 @@ const getCellData = (cellId: string) => {
    return { rowIndex, colIndex, owner };
 }
 
+const generateMessageId = () => {
+   return `${Date.now()}-${Math.floor(Math.random() * 20)}`
+}
+
 export const useGameStore = create<IGameStoreState>()(persist((set) => ({
    gameStatus: 'in progress',
    currTurn: 'player',
+   notificationMessages: [],
    playerCells: initField('player'),
    playerShips: initShips('player'),
    enemyCells: initField('enemy'),
    enemyShips: initShips('enemy'),
 
+   removeMessage: (id: string) => set((state) => ({
+      notificationMessages: state.notificationMessages.filter((msg) => msg.id !== id)
+   })),
    setPlacementStatus: () => set(() => ({
       gameStatus: 'placement'
    })),
@@ -53,7 +61,15 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       const shipType = shipTypeMap[shipSize];
       const { owner } = getCellData(cellIds[0]);
 
-      if (!shipType) return state;
+      if (!shipType) {
+         return {
+            ...state, 
+            notificationMessages: [
+               ...state.notificationMessages, 
+               { id: generateMessageId(), text: 'такого типа корабля не существует' }
+            ]
+         }
+      }
 
       const areCellsEmpty = cellIds.every((cellId) => {
          const { rowIndex, colIndex } = getCellData(cellId);
@@ -67,7 +83,15 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
          
       });
 
-      if (!areCellsEmpty) return state;
+      if (!areCellsEmpty) {
+          return {
+            ...state, 
+            notificationMessages: [
+               ...state.notificationMessages, 
+               { id: generateMessageId(), text: 'выбранные ячейки уже заняты' }
+            ]
+         }
+      }
 
       const seenCells = new Set();
       let nothingNearby: boolean = true;
@@ -108,7 +132,15 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
          if (!nothingNearby) break;
       }
 
-      if (!nothingNearby) return state;
+      if (!nothingNearby) {
+         return {
+            ...state, 
+            notificationMessages: [
+               ...state.notificationMessages, 
+               { id: generateMessageId(), text: 'корабли находятся слишком близко к друг другу' }
+            ]
+         }
+      }
 
       let shipToPlace: IShipItem | null = null;
 
@@ -369,6 +401,7 @@ export const useGameStore = create<IGameStoreState>()(persist((set) => ({
       playerShips: initShips('player'),
       enemyCells: initField('enemy'),
       enemyShips: initShips('enemy'),
+      notificationMessages: []
    }))
 }), 
    { name: 'sea-battle-storage' }

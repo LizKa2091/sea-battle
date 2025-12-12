@@ -25,3 +25,8 @@ export type ShipState = 'ready' | 'placed' | 'damaged' | 'destroyed';
 export type FieldShipsMap = Map<string, IShipItem>;
 
 export type User = 'player' | 'enemy';
+
+export interface IMessage {
+   id: string;
+   text: string;
+}

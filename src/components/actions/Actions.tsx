@@ -3,7 +3,6 @@ import ActionButton from '../action-button/ActionButton';
 import { useGameStore } from '../../store/useGameStore';
 import { useSelectedCells } from '../../hooks/useSelectedCells';
 import { useDamageRandomCell } from '../../hooks/useDamageRandomCell';
-import { usePlaceRandomShips } from '../../hooks/usePlaceRandomShips';
 import type { User } from '../../types/types';
 
 import styles from './Actions.module.scss';
@@ -13,9 +12,8 @@ interface IUserActions {
 }
 
 const Actions: FC<IUserActions> = ({ user }) => {
-   const { damageCell, placeShip, resetGame, currTurn, gameStatus } = useGameStore();
+   const { damageCell, placeShip, currTurn, gameStatus } = useGameStore();
    const { damageRandomCell } = useDamageRandomCell();
-   const { placeRandomShips } = usePlaceRandomShips();
    const selectedCells = useSelectedCells(gameStatus);
 
    useEffect(() => {
@@ -42,28 +40,17 @@ const Actions: FC<IUserActions> = ({ user }) => {
       damageCell(selectedCells[0].id);
    }
 
-   const handleRestartGame = () => {
-      resetGame();
-      placeRandomShips();
-   }
-
    const renderButtons = () => {
       if (user === 'player' && gameStatus === 'placement') {
          return <ActionButton text='Разместить корабль' onClick={() => placeShip(selectedCellsIds)} />
       }
       else if (user === 'enemy' && gameStatus === 'in progress') {
          return (
-            <>
-               <ActionButton 
-                  text='Атаковать' 
-                  onClick={handleDamageCell} 
-                  disabled={currTurn === 'enemy'}
-               />
-               <ActionButton 
-                  text='Начать игру заново' 
-                  onClick={handleRestartGame} 
-               />
-            </>
+            <ActionButton 
+               text='Атаковать' 
+               onClick={handleDamageCell} 
+               disabled={currTurn === 'enemy'}
+            />
          )
       }
    }

@@ -4,7 +4,9 @@ import Menu from '../components/menu/Menu';
 
 const MainPage: FC = () => {
    return (
-      <Menu />
+      <div className='pageContainer'>
+         <Menu />
+      </div>
    )
 }
 
