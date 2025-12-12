@@ -5,6 +5,7 @@ import MainPage from "./pages/MainPage";
 import GamePage from "./pages/GamePage";
 
 import './styles/reset.scss';
+import './styles/global.scss';
 
 const App: FC = () => {
    const location = useLocation();
