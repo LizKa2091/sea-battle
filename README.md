@@ -5,6 +5,8 @@
 ![SCSS](https://img.shields.io/badge/SCSS-1.96.0-CC6699?logo=sass)
 ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite) 
 
+[![Запуск через Docker Compose](https://img.shields.io/badge/Запуск-docker_compose_up-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+
 ![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000?logo=vercel)
 
 # Sea Balttle
